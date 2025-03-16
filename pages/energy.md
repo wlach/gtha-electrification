@@ -7,11 +7,13 @@ There are two angles to energy use in a household: production and consumption.
 With the addition of the heat pump added a significant amount of electrical load during the winter months.
 You can see this clearly by looking at this chart of our monthly consumption:
 
-```sql electricity_used_by_month
-select Month,"Electric kWh","Utility Electric kWhr","Net kWh" from utility_measures.utility_measures
-```
+<LineChart 
+    data={total_production_consumption_export}
+    x=month
+    y=total_consumption
+    yFmt="kWh" />
 
-The above chart _discounts_ the effect of using solar.
+The above chart includes both energy drawn from the grid _and_ self-consumption from our solar system.
 For more information on that calculation, see the next section.
 
 The system comes with a 10kW backup strip, but honestly we probably didn't use it much (if at all) based on the data I'm seeing.
@@ -87,18 +89,24 @@ solar_data as (
         sum(kWh) as total_generated_kWh
     from utility_measures.solar_output
     group by month
+),
+all_months as (
+    select distinct month from utility_data
+    union
+    select distinct month from solar_data
 )
 select
-    sd.month as month,
-    sd.total_generated_kWh as total_generated_kWh,
+    am.month as month,
+    coalesce(sd.total_generated_kWh, 0) as total_generated_kWh,
     ud.utility_measured_kwh as utility_measured_kwh,
     ud.utility_measured_kwhr as utility_measured_kwhr,
-    sd.total_generated_kWh - ud.utility_measured_kwhr as self_consumption,
+    coalesce(sd.total_generated_kWh, 0) - ud.utility_measured_kwhr as self_consumption,
+    ud.utility_measured_kwh + self_consumption as total_consumption,
     ud.utility_measured_kwh - ud.utility_measured_kwhr as net_consumption
-from solar_data sd
-join utility_data ud
-on sd.month = ud.month
-order by sd.month
+from all_months am
+left join solar_data sd on am.month = sd.month
+left join utility_data ud on am.month = ud.month
+order by am.month
 ```
 
 <DataTable data={total_production_consumption_export}>
