@@ -1,5 +1,7 @@
 # Financials
 
+## Utility Bills
+
 ```sql total_cost
 select cast(Month as date) as month, "Total electricity bill" as total, 'electricity' as bill_type from utility_measures.utility_measures
 union all
@@ -102,12 +104,16 @@ And by doing so, we can find out some interesting things about time of use rates
 The above tells a story of how, so long as natural gas remains relatively cheap and electricity expensive by comparison, heating a house with the former is going to win out economically.
 I thought it would be useful to break out the solar system by itself, although note that this system wouldn't have really made sense for us pre-heat-pump (when our electricity usage would have been less than the total output of the solar system) since net metering has no provision to credit you for over-production.
 
+### Net Metering
+
 At the time we installed the solar system, you could **only** use this program in conjunction with
 the tiered rate plan, which gives a fixed rate for the first block of electricity (600 in the summer, 1000 in the winter)
 and a higher rate for the second block (see the next section for time-of-use billing, and how it's a bit of a game changer).
 This makes it pretty easy to calculate the value of your solar installation, assuming
 your production is less than or equal to your consumption, just measure the net production per month and then apply the tiered rate to it.
 Electricity that you produce and use yourself (self-consumption) has a somewhat higher value, since you avoid the distribution fee (a few cents per kWh).
+
+TODO: Insert some kind of chart or graphic showing how this works
 
 ### Time of use billing: game changer?
 
@@ -135,22 +141,84 @@ utility_measures.solar_output where time >= '2024-09-03 00:00:00' and time < '20
 Huge difference! Let's look at how that adds up over a year:
 
 ```sql monthly_tiered_vs_tou
+with values as (
+    select
+        strftime(time, '%Y-%m') as month,
+        sum(kWh) as kWh,
+        sum(kWh * tou_rate) as tou_value,
+        sum(kWh * tiered_rate) as tiered_value
+    from utility_measures.solar_output
+    group by month
+)
 select
-    strftime(time, '%Y-%m') as month,
-    sum(kWh) as kWh,
-    null as tou_rate,
-    sum(kWh * tou_rate) as tou_value,
-    null as tiered_rate,
-    sum(kWh * tiered_rate) as tiered_value
-from utility_measures.solar_output
-group by month
-union all
-select 'Total' as month,
-    sum(kWh) as kWh,
-    null as tou_rate,
-    sum(kWh * tou_rate) as tou_value,
-    null as tiered_rate,
-    sum(kWh * tiered_rate) as tiered_value
-from utility_measures.solar_output
-order by month
+    month,
+    kWh,
+    tou_value,
+    tiered_value,
+    (tou_value - tiered_value) / ((tou_value + tiered_value) / 2) as pct_improvement
+from values
 ```
+
+<DataTable data={monthly_tiered_vs_tou} totalRow={true} rows=all>
+    <Column id=month title="Month" />
+    <Column id="kWh" title="Solar Production (kWh)" />
+    <Column id="tou_value" title="Time of Use Value" fmt=cad />
+    <Column id="tiered_value" title="Tiered Value" fmt=cad />
+    <Column id="pct_improvement" title="Percent Improvement" fmt=pct totalAgg="mean" />
+</DataTable>
+
+~$120 for doing nothing more than sending an email to switch a rate plan. Not bad!
+
+## Time to break-even
+
+Given the earlier comments about the cost of a solar system, you might be wondering if the investment makes sense.
+
+The way to determine this is to project the numbers we got above over time.
+
+<Slider
+    title="Yearly percent increase" 
+    name=yearly_percent_increase
+    defaultValue=5
+    min=0
+    max=10
+    step=1
+/>
+
+```sql total_value_over_a_year
+with recursive yearly_values as (
+    select
+        1 as year,
+        sum(kWh) as kWh_value,
+        sum(kWh * tou_rate) as tou_value,
+        sum(kWh * tou_rate) as cumulative_savings
+    from utility_measures.solar_output
+    where time >= '2024-01' and time <= '2024-12'
+    union all
+    select
+        year + 1,
+        kWh_value,
+        tou_value * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100),
+        cumulative_savings + (tou_value * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100))
+    from yearly_values
+    where year < 20
+)
+select
+    year,
+    kWh_value,
+    tou_value,
+    cumulative_savings
+from yearly_values
+```
+
+<BarChart 
+    data={total_value_over_a_year}
+    x=year
+    y=cumulative_savings
+/>
+
+Assumptions:
+
+1. The Ontario government continues to allow net metering under the current terms.
+2. The system doesn't require repairs or maintenance.
+
+TODO: Needs more narrative, thoughts about expected increases (without getting too political), maybe a note that 2024 was a bad solar year. Perhaps create a model that assumes a constant rate over the year?

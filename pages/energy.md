@@ -11,7 +11,9 @@ You can see this clearly by looking at this chart of our monthly consumption:
     data={total_production_consumption_export}
     x=month
     y=total_consumption
-    yFmt="kWh" />
+    yFmt="kWh">
+<ReferenceLine x="2023-10-01" label="Heat Pump Installed" hideValue=true />
+</LineChart>
 
 The above chart includes both energy drawn from the grid _and_ self-consumption from our solar system.
 For more information on that calculation, see the next section.
@@ -45,11 +47,8 @@ from readings
 
 That works out to an average of about 1.91 kWh _per hour_ on a very cold day.
 Between 9:24 and 12:46 (when the weather was coldest), we used only about 4 kWh.
-The specifications on the heat pump suggested that the maximum
-
+The specifications on the heat pump suggest that the maximum output of the heat pump itself is 3kW, leading me to suspect that we just didn't need the electric backup in most cases.
 It's probably good to have for insurance purposes (e.g. if the heat pump breaks down) but I don't think it was necessary otherwise.
-
-Now, let's look at how
 
 ## Production
 
@@ -61,19 +60,22 @@ In Ontario, we use a system called "net metering", which allows you to resell ex
 solar power at the retail rate that you buy it (not including the delivery charge,
 which works out to a few cents per kWh).
 
-We'll get more into the economics in the finance section,
+We'll get more into the economics in the finance section, but the birds eye view of a system like this is that it produces _a lot more_ in the summer than in the winter.
+If you're trying to fully offset your electricity use over a full year (not a possibility in our
+case) you'd size so as to produce enough in the summer to offset your winter.
 
 The other variable here is of course self-consumption: by default, my solar system
 will first try to power the house. What's left over at any given time is what's sold
-to the grid. Under a tiered system, it's definitely better to use the power yourself
-wherever possible: that way you avoid the delivery fee (a few cents per kWh).
+to the grid. The utility only measures the latter, of course, what we use ourselves is only
+visible to us.
 
-There's a few ways we can get the quantities involved:
+To get a handle on these variables, I sourced information from two different sources:
 
 - We can get the kWhR values we send to the utility from our utility bill
 - The SolarEdge inverter I have has telemetry values which tell you how much
   it produced over a given hour.
-- By subtracting the two, we can get a rough idea of how much we used ourselves.
+
+By subtracting the second from the first, we can get a rough idea of how much we used ourselves.
 
 ```sql total_production_consumption_export
 with utility_data as (
