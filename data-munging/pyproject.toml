@@ -1,0 +1,13 @@
+[project]
+name = "data-munging"
+version = "0.1.0"
+description = "Data munging scripts for gtha-electrification"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "duckdb>=1.2.1",
+    "marimo>=0.11.25",
+    "polars>=1.25.2",
+    "pyarrow>=19.0.1",
+    "sqlglot>=26.11.1",
+]

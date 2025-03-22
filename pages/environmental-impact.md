@@ -108,4 +108,4 @@ from (
 </DataTable>
 
 As a further point of reference, [the suggested global limit for per-capita personal emissions is 2.1 tons](https://www.oxfam.org/en/press-releases/richest-1-burn-through-their-entire-annual-carbon-limit-just-10-days).
-It's very likely my activities still cause me to exceed that (such is the western lifestyle), but at least we're removing some element of harm.
+It's very likely our activities still cause me to exceed that (such is the western lifestyle), but at least we're removing some element of harm.

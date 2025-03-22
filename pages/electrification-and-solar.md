@@ -15,7 +15,7 @@ Traditionally, you can get heat in a few ways: either you burn some type of foss
 The per-unit cost doesn't really matter all that much for something like a stove (which you use relatively rarely), somewhat matters for a water heater (where you are trying to keep a constant volume of water at a particular temperature), and matters a lot for space heating a relatively large area in a place that gets cold.
 
 Even with relatively inexpensive electricity, this type of heating is pretty expensive: per unit of heat, natural gas (if you can get it) is almost always going to be **way** cheaper. It's simply much cheaper to burn something at the point of use than to generate electricity, transmit it, then make a resistance element hot.
-However, there is now a third option! Enter heat pumps. Instead of using electric current directly to heat up an element, heat pumps allow you to extract heat from the air. Think of a refrigerator, but acting in reverse: by circulating a refrigerant through a mechanical system and transforming it from liquid back to a gas, you can extract heat from it and use that to heat your home. Using a heat pump to heat something is several times more efficient than electric resistance heating.
+However, there is now a third option! Enter heat pumps. Instead of using electric current directly to heat up an element, heat pumps allow you to extract heat from the air. Think of a refrigerator, but acting in reverse: by circulating a refrigerant through a mechanical system and transforming it from liquid back to a gas, you can extract heat from it and use that to heat your home. Per unit of heat, this process is several times more efficient than electric resistance.
 
 A crude way of measuring how much you use for space heating is just to compare your energy use in a shoulder season (spring or fall) to a winter month.
 
@@ -33,8 +33,8 @@ While some small percentage of the above increase month over month has to do wit
 
 ## Cooling
 
-During the summer, air conditioning is really nice to have. I wouldn't say it's _absolutely_ essential unless you have special needs.
-Your two options here are both electric: a heat pump or a traditional air conditioner (which is less efficient). In either case, it's a smaller portion of our energy use. For example here's our comparative usage in the summer (before we got the heat pump) versus the previously measured shoulder month:
+During the summer, air conditioning is really nice to have although I wouldn't say it's _absolutely_ essential unless you have special needs.
+Your two options here (both electric): a heat pump or a traditional air conditioner (which is less efficient). In either case, it's a smaller portion of your energy use. For example here's our comparative usage in the summer (before we got the heat pump) versus the previously measured shoulder month:
 
 ```sql usage_shoulder_vs_summer
 select Month, "Electric kWh", "Total electricity bill" from utility_measures.utility_measures

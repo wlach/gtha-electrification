@@ -7,11 +7,46 @@ There are two angles to energy use in a household: production and consumption.
 With the addition of the heat pump added a significant amount of electrical load during the winter months.
 You can see this clearly by looking at this chart of our monthly consumption:
 
+```sql total_production_consumption_export
+with utility_data as (
+    select
+        Month as month,
+        "Electric kWh" as utility_measured_kwh,
+        "Utility Electric kWhr" as utility_measured_kwhr
+    from utility_measures.utility_measures
+),
+solar_data as (
+    select
+        date_trunc('month', cast(time as date)) as month,
+        sum(kWh) as total_generated_kWh
+    from utility_measures.solar_output
+    group by month
+),
+all_months as (
+    select distinct month from utility_data
+    union
+    select distinct month from solar_data
+)
+select
+    am.month as month,
+    coalesce(sd.total_generated_kWh, 0) as total_generated_kWh,
+    ud.utility_measured_kwh as utility_measured_kwh,
+    ud.utility_measured_kwhr as utility_measured_kwhr,
+    coalesce(sd.total_generated_kWh, 0) - ud.utility_measured_kwhr as self_consumption,
+    ud.utility_measured_kwh + self_consumption as total_consumption,
+    ud.utility_measured_kwh - ud.utility_measured_kwhr as net_consumption
+from all_months am
+left join solar_data sd on am.month = sd.month
+left join utility_data ud on am.month = ud.month
+order by am.month
+```
+
 <LineChart 
     data={total_production_consumption_export}
     x=month
     y=total_consumption
-    yFmt="kWh">
+    yFmt="kWh"
+    >
 <ReferenceLine x="2023-10-01" label="Heat Pump Installed" hideValue=true />
 </LineChart>
 
@@ -76,40 +111,6 @@ To get a handle on these variables, I sourced information from two different sou
   it produced over a given hour.
 
 By subtracting the second from the first, we can get a rough idea of how much we used ourselves.
-
-```sql total_production_consumption_export
-with utility_data as (
-    select
-        Month as month,
-        "Electric kWh" as utility_measured_kwh,
-        "Utility Electric kWhr" as utility_measured_kwhr
-    from utility_measures.utility_measures
-),
-solar_data as (
-    select
-        date_trunc('month', cast(time as date)) as month,
-        sum(kWh) as total_generated_kWh
-    from utility_measures.solar_output
-    group by month
-),
-all_months as (
-    select distinct month from utility_data
-    union
-    select distinct month from solar_data
-)
-select
-    am.month as month,
-    coalesce(sd.total_generated_kWh, 0) as total_generated_kWh,
-    ud.utility_measured_kwh as utility_measured_kwh,
-    ud.utility_measured_kwhr as utility_measured_kwhr,
-    coalesce(sd.total_generated_kWh, 0) - ud.utility_measured_kwhr as self_consumption,
-    ud.utility_measured_kwh + self_consumption as total_consumption,
-    ud.utility_measured_kwh - ud.utility_measured_kwhr as net_consumption
-from all_months am
-left join solar_data sd on am.month = sd.month
-left join utility_data ud on am.month = ud.month
-order by am.month
-```
 
 <DataTable data={total_production_consumption_export}>
     <Column id="month" title="Month" />

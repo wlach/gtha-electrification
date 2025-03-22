@@ -9,6 +9,13 @@ select cast(Month as date) as month, "Total gas bill" as total, 'gas' as bill_ty
 order by month asc
 ```
 
+```sql temperature_by_month
+select tbm.month,mean_temp_c from weather.temperature_by_month tbm
+join (${total_cost}) tc on tc.month = tbm.month
+group by 1, 2
+order by tbm.month
+```
+
 I think the most intuitive way of looking at the financial impact is to just look at utility bills, month over month. What do they add up to?
 From this, we can get an intuition on the effect of our actions.
 
@@ -22,12 +29,21 @@ Let's start just by looking at a graph of what things look like month over month
     y=total
     yFmt="cad"
     series=bill_type
+    connectGroup=total_bill_cost
 />
 
-Just glancing at it, you can see that our overall energy costs have gone **up** in
-January over the previous year, despite the fact that we've added solar panels and
-insulation. However, you can't really measure the effect of a change like this looking
-at just one month: the more meaningful comparison is over a whole year:
+<LineChart
+    data={temperature_by_month}
+    x=month
+    y=mean_temp_c
+    connectGroup=total_bill_cost
+/>
+
+Just glancing at it, you can see that our overall energy costs have gone **up** in January over the previous year, despite the fact that we've added solar panels and insulation.
+Part of this is just due to the fact that January was just a colder month in 2024 than it was in 2023, but it does illustrate the general point that a heat pump is not going to be a panacea: it may be efficient, but it still costs money to run!
+
+That aside, I think it's a bit of mistake to compare this change over such a short period.
+The more meaningful comparison is over a whole year.
 
 ```sql total_cost_year
 with base_year as (
