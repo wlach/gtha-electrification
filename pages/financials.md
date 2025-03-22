@@ -185,7 +185,7 @@ from values
 
 ~$120 for doing nothing more than sending an email to switch a rate plan. Not bad!
 
-## Time to break-even
+### Time to break-even
 
 Given the earlier comments about the cost of a solar system, you might be wondering if the investment makes sense.
 

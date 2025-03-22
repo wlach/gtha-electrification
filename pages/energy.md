@@ -82,7 +82,7 @@ from readings
 
 That works out to an average of about 1.91 kWh _per hour_ on a very cold day.
 Between 9:24 and 12:46 (when the weather was coldest), we used only about 4 kWh.
-The specifications on the heat pump suggest that the maximum output of the heat pump itself is 3kW, leading me to suspect that we just didn't need the electric backup in most cases.
+The specifications on the heat pump suggest that the maximum output of the heat pump itself is 3kW, leading me to suspect that we just didn't need the electric backup.
 It's probably good to have for insurance purposes (e.g. if the heat pump breaks down) but I don't think it was necessary otherwise.
 
 ## Production

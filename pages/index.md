@@ -17,7 +17,7 @@ Approximately a year after the work completed, I had enough data on the performa
 Putting this site together, I had a few goals:
 
 1. To quantify the environmental impacts (if any) from adopting this type of technology.
-1. To try to understand the prospects for this type of technology in the future. We benefited from various government programs in our case (Greener homes grants and loans) but it looks like those are on their way out. Would this have made sense without them?
+1. To try to understand the prospects for household electrification in the future. We benefited from various government programs in our case (Greener homes grants and loans) but it looks like those are on their way out. Would this have made sense without them?
 
 In putting this together, I quickly realized there's just too many variables at play to really provide definitive answers on these questions.
 Still, I felt by combining my own data with some credible figures (e.g. the CO2 emissions associated with natural gas and electrical generation in Ontario) I could at least provide some data which might be interesting to someone contemplating something similar.

@@ -51,7 +51,7 @@ Roughly 130 kWh (or 4.5ish kWh per day), equalling an extra $20 on our electrici
 
 ## Everything else
 
-Lighting, computers, vacuum cleaners, etc., etc. These things are essential to our quality of life, but in terms of actual energy use they're (usually) pretty small potatoes. Again, I've left them out of the analysis.
+Lighting, computers, vacuum cleaners, etc., etc. These things are essential to our quality of life, but in terms of actual energy use they're (usually) pretty small potatoes. For brevity, I've left them out of the analysis.
 
 ## Auditing our use
 
