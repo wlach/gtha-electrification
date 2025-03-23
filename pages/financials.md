@@ -17,11 +17,12 @@ order by tbm.month
 ```
 
 I think the most intuitive way of looking at the financial impact is to just look at utility bills, month over month. What do they add up to?
-From this, we can get an intuition on the effect of our actions.
+From this, we can get an idea on the effect of our actions.
 
-For the purposes of this site, I'm going to directly compare the period between September 2022 and August 2023 (the year before the work was done) with the period between September 2023 and August 2024 (the year after the work was done). There's obviously reasons why these periods aren't necessarily _directly_ comparable (e.g. weather) but you have to start somewhere, right?
+For the purposes of this site, I'm going to directly compare the period between September 2022 and August 2023 (the year before the work was done) with the period between September 2023 and August 2024 (the year after the work was done).
+There's obviously reasons why these periods aren't necessarily _directly_ comparable (e.g. weather) but you have to start somewhere, right?
 
-Let's start just by looking at a graph of what things look like month over month:
+Let's graph that out:
 
 <AreaChart 
     data={total_cost}
@@ -29,14 +30,17 @@ Let's start just by looking at a graph of what things look like month over month
     y=total
     yFmt="cad"
     series=bill_type
+    title="Utility Bills (total)"
     connectGroup=total_bill_cost
 />
 
 <LineChart
-    data={temperature_by_month}
-    x=month
-    y=mean_temp_c
-    connectGroup=total_bill_cost
+data={temperature_by_month}
+x=month
+y=mean_temp_c
+title="Monthly Mean Temperature"
+yFmt='#,##0.00"°C"'
+connectGroup=total_bill_cost
 />
 
 Just glancing at it, you can see that our overall energy costs have gone **up** in January over the previous year, despite the fact that we've added solar panels and insulation.
@@ -194,9 +198,9 @@ The way to determine this is to project the numbers we got above over time.
 <Slider
     title="Yearly percent increase" 
     name=yearly_percent_increase
-    defaultValue=5
+    defaultValue=2
     min=0
-    max=10
+    max=5
     step=1
 />
 
@@ -230,6 +234,7 @@ from yearly_values
     data={total_value_over_a_year}
     x=year
     y=cumulative_savings
+    yMax={30000}
 />
 
 Assumptions:

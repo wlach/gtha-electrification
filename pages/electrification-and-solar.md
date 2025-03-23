@@ -8,19 +8,23 @@ In breaking down how a North American household uses energy, there's a few key c
 
 ## Heating
 
-No surprise: space heating dominates energy use in Canadian homes.
+No surprise: heating dominates energy use in Canadian homes.
 
-Traditionally, you can get heat in a few ways: either you burn some type of fossil fuel (natural gas is usually the cheapest option if it's available, since you can get it piped directly into your house) or you take electricity and use it to heat up an resistance material. In 2024, natural gas is by far the cheaper of the two (more on that later). The exact values depends on the jurisdiction: Ontario has relatively inexpensive electricity, although our provincial neighbor, Qu&eacute;bec, is cheaper still thanks to its abundant hydro-power.
+Traditionally, you can get heat in a few ways: either you burn some type of fossil fuel (natural gas is usually the cheapest option if it's available, since you can get it piped directly into your house) or you take electricity and use it to heat up an resistive material.
+The cost and availability of these options varies wildly depending on your jurisdiction.
 
-The per-unit cost doesn't really matter all that much for something like a stove (which you use relatively rarely), somewhat matters for a water heater (where you are trying to keep a constant volume of water at a particular temperature), and matters a lot for space heating a relatively large area in a place that gets cold.
+The per-unit cost doesn't really matter all that much for something like a stove (which you use relatively rarely), somewhat matters for a water heater (where you are trying to keep a constant volume of water at a particular temperature), and matters a lot for heating a relatively large area in a place that gets cold.
 
-Even with relatively inexpensive electricity, this type of heating is pretty expensive: per unit of heat, natural gas (if you can get it) is almost always going to be **way** cheaper. It's simply much cheaper to burn something at the point of use than to generate electricity, transmit it, then make a resistance element hot.
-However, there is now a third option! Enter heat pumps. Instead of using electric current directly to heat up an element, heat pumps allow you to extract heat from the air. Think of a refrigerator, but acting in reverse: by circulating a refrigerant through a mechanical system and transforming it from liquid back to a gas, you can extract heat from it and use that to heat your home. Per unit of heat, this process is several times more efficient than electric resistance.
+Ontario has relatively inexpensive electricity, although our provincial neighbor, Qu&eacute;bec, is cheaper still thanks to its abundant hydro-power.
+But even in these cases, this type of heating is pretty expensive: per unit of heat, natural gas (if you can get it) is almost always going to be **way** cheaper.
+It's much cheaper to burn something at the point of use than to generate electricity, transmit it, then make a resistive element hot.
+
+However, there is now a third option! Enter heat pumps. Instead of using electric current directly to heat up an element, heat pumps extract heat from the air.
+Through a refrigerant cycle, they efficiently extract heat from the air outside and pump it inside.
+Heat pumps can move more total heat than the power required to operate them, so they are several times more efficient than electric resistance heating.
 
 A crude way of measuring how much you use for space heating is just to compare your energy use in a shoulder season (spring or fall) to a winter month.
-
-Not to jump to the end, but it's illustrative to compare energy usage from a shoulder season month where we have little to no space heating (or cooling) against the coldest winter month.
-Here's the raw numbers for a couple months in the year before we embarked on this project:
+To illustrate, here are the raw numbers for a couple months in the year before we embarked on this project:
 
 ```sql usage_shoulder_vs_winter
 select Month, "Electric kWh", "Gas m3", "Total electricity bill", "Total gas bill" from utility_measures.utility_measures
@@ -29,12 +33,14 @@ where Month in ('2022-09-01', '2023-01-01')
 
 <DataTable data={usage_shoulder_vs_winter} />
 
-While some small percentage of the above increase month over month has to do with lightning, the vast majority of extra electricity and gas use was due to space heating requirements. In addition to the gas furnace, we used an electric space heater to heat our bedroom at night so I could turn down the thermostat a few extra degrees.
+While some small percentage of the above increase month over month has to do with lightning, the vast majority of extra electricity and gas use was due to indoor heating requirements. In addition to cranking up the gas furnace in the winter, we used an electric space heater to heat our bedroom at night so I could turn down the thermostat a few extra degrees.
 
 ## Cooling
 
-During the summer, air conditioning is really nice to have although I wouldn't say it's _absolutely_ essential unless you have special needs.
-Your two options here (both electric): a heat pump or a traditional air conditioner (which is less efficient). In either case, it's a smaller portion of your energy use. For example here's our comparative usage in the summer (before we got the heat pump) versus the previously measured shoulder month:
+Ontario summers get somewhat hot and humid. As such, air conditioning (AC) is really nice to have.
+The two options for AC are both electric: a heat pump or a traditional air conditioner (which is less efficient).
+In either case, it's a smaller portion of your energy use.
+For example here's our comparative usage in the summer (before we got the heat pump) versus the previously measured shoulder month:
 
 ```sql usage_shoulder_vs_summer
 select Month, "Electric kWh", "Total electricity bill" from utility_measures.utility_measures
@@ -51,11 +57,12 @@ Roughly 130 kWh (or 4.5ish kWh per day), equalling an extra $20 on our electrici
 
 ## Everything else
 
-Lighting, computers, vacuum cleaners, etc., etc. These things are essential to our quality of life, but in terms of actual energy use they're (usually) pretty small potatoes. For brevity, I've left them out of the analysis.
+Lighting, computers, vacuum cleaners, etc., etc. These things are essential to our quality of life, but in terms of actual energy use they're (usually) small potatoes. For brevity, I've left them out of the analysis.
 
 ## Auditing our use
 
-Before embarking on any of these projects, we got an energy audit from a local company called [Green Venture](https://www.greenventure.ca/). This was a prerequisite for the various loans and incentives we got from the government, but it would be something I'd recommend in any case. The auditor's findings and recommendations were pretty key to giving me the confidence to move forward with the changes I'm going to describe below.
+Before embarking on any of these projects, we got an energy audit from a local company called [Green Venture](https://www.greenventure.ca/). This was a prerequisite for the various loans and incentives we got from the government, but it would be something I'd recommend in any case to avoid making expensive upgrades that don't make a big difference.
+The auditor's findings and recommendations were pretty key to our decision making process.
 
 The report gave an approximate number for the heating load of our house (giving us a baseline from which to improve) as well as:
 
