@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Energy
 
 There are two angles to energy use in a household: production and consumption.
@@ -38,6 +42,7 @@ select
 from all_months am
 left join solar_data sd on am.month = sd.month
 left join utility_data ud on am.month = ud.month
+where am.month <= '2024-09-01'
 order by am.month
 ```
 
@@ -128,12 +133,18 @@ goes down over the course of the year as the days get longer and our need for he
     y=net_consumption
     yFmt="kWh" />
 
-You'll note that in no month did we actually produce more than we consumed.
+It's also interesting to look at "self consumption" on its own.
+This is electricity directly consumed by our household, without being sent to the grid.
+
+<LineChart 
+    data={total_production_consumption_export}
+    x=month
+    y=self_consumption
+    yFmt="kWh" />
+
+You'll note that only in September 2024 did we actually produce more than we consumed.
 This is due to two factors:
 
 1. Our system is a little undersized. Unfortunately we ran out of useable south
    facing roof space! Such is life.
-2. We were continuously running an inefficient dehumidifier in the basement until
-   August 2024 which was using a lot of power. Oops 🤦. I wrote about this [on mastodon](https://mastodon.social/@wlach/112869943948893579) last year.
-
-With (2) fixed, I expect there will be some months in late spring/summer 2025 (May - August) where we are at least break-even.
+2. We were continuously running an inefficient dehumidifier in the basement until August 2024 which was using a lot of power. Oops 🤦. I wrote about this [on mastodon](https://mastodon.social/@wlach/112869943948893579) last year.

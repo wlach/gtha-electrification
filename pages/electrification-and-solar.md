@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Electrification and Solar
 
 In breaking down how a North American household uses energy, there's a few key categories:
@@ -123,8 +127,8 @@ I'm more optimistic about the future of community solar (the site above being a 
 
 Our plan being to get off natural gas altogether, there were some smaller appliances to take care of: hot water, stove, and dryer.
 
-For hot water, we went with a boring old conventional electric heater, on account of us being a relatively small household that doesn't have high usage. A heat pump water heater was quoted as being several thousand more expensive, and it didn't seem worth the cost - it would probably take decades to recover the extra money, assuming the unit didn't break\!
+For hot water, we went with a boring old conventional electric heater, on account of us being a relatively small household that doesn't have high usage. A heat pump water heater was quoted as being several thousand more expensive, and it didn't seem worth the cost: it would probably take decades to recover the extra money.
 
-We also replaced our old gas stove with a new induction range. Induction stoves are cool\! We were a little worried about what the experience cooking with them would be, but so far it's been great. They boil water like nothing else. They also aren't the health hazard that a gas stove is.
+We also replaced our old gas stove with a new induction range. Induction stoves are cool\! We were a little worried about what the experience cooking with them would be, but so far it's been great. It has the same "turn the knob, get heat" behaviour we enjoyed from a gas stove, without the particulate emissions. It also boils water super fast!
 
 We still have a gas drier that we haven't yet swapped out. 😭

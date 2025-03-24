@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # Financials
 
 ## Utility Bills
@@ -20,27 +24,29 @@ I think the most intuitive way of looking at the financial impact is to just loo
 From this, we can get an idea on the effect of our actions.
 
 For the purposes of this site, I'm going to directly compare the period between September 2022 and August 2023 (the year before the work was done) with the period between September 2023 and August 2024 (the year after the work was done).
-There's obviously reasons why these periods aren't necessarily _directly_ comparable (e.g. weather) but you have to start somewhere, right?
+There's obvious reasons why these periods aren't _directly_ comparable but you have to start somewhere, right?
 
 Let's graph that out:
 
-<AreaChart 
-    data={total_cost}
-    x=month
-    y=total
-    yFmt="cad"
-    series=bill_type
-    title="Utility Bills (total)"
-    connectGroup=total_bill_cost
-/>
+<AreaChart
+data={total_cost}
+x=month
+y=total
+yFmt="cad"
+series=bill_type
+title="Utility Bills (total)"
+connectGroup=total_bill_cost>
+<ReferenceLine x="2023-10-01" label="Heat Pump" hideValue=true />
+<ReferenceLine x="2023-11-01" label="Solar Panels" hideValue=true />
+</AreaChart>
 
 <LineChart
-data={temperature_by_month}
-x=month
-y=mean_temp_c
-title="Monthly Mean Temperature"
-yFmt='#,##0.00"°C"'
-connectGroup=total_bill_cost
+    data={temperature_by_month}
+    x=month
+    y=mean_temp_c
+    title="Monthly Mean Temperature"
+    yFmt='#,##0.00"°C"'
+    connectGroup=total_bill_cost
 />
 
 Just glancing at it, you can see that our overall energy costs have gone **up** in January over the previous year, despite the fact that we've added solar panels and insulation.
@@ -103,7 +109,6 @@ order by period asc
 
 The first two rows represent actual, real numbers.
 Unfortunately my utility bills don't go any further back than September 2022, so I can't really do an apples-to-apples comparison of the "total utility bill cost".
-One further caveat is that our solar system was only installed in mid-November 2023, so these numbers don't reflect the savings that I'd expect if we had the system installed in a full year. In particular, September and October are usually good solar months.
 
 I also included some bonus calculations for a few counterfactuals:
 
@@ -112,12 +117,22 @@ I also included some bonus calculations for a few counterfactuals:
    (and very little at that), so the expense is almost entirely fixed charges which we could have avoided if we were a little more aggressive about buying new appliances.
 1. Since a solar system doesn't make sense for everyone, I thought it might be useful to look at costs with no solar system installed. For these calculations, I estimated we would have had to purchase all the solar energy we generated from the utility at approximately $0.12 per kWh (this is a conservative estimate that accounts for both the electricity rate and delivery charges we would have paid).
 
-But, I think discounting that, there are two takeaways:
+I really do want to emphasize that this isn't an apples-to-apples comparison.
+There are just so many reasons why the numbers are the way they are:
+
+1. Our solar system was only installed in mid-November 2023, so these numbers don't reflect the savings that I'd expect if we had the system installed in a full year. In particular, September and October are usually good solar months.
+1. As mentioned on the energy page, we had an inefficient dehumidifier running in the basement which somewhat distorted our energy use.
+1. I'm pretty sure we used air conditioning more in 2024, especially in June/July/August. Central air conditioning is nice, what can I say?
+1. Shifting commodity and energy prices year over year.
+1. The [Canadian Carbon Tax](https://en.wikipedia.org/wiki/Carbon_pricing_in_Canada) (which was offset by a rebate in Ontario, not incorporated into these numbers).
+1. Weather differences.
+
+Even discounting all of that, I feel there's still a pretty overall picture here that I don't expect to change:
 
 1. On a pure cost basis, a heat pump with electric backup is going to be more expensive than a natural gas furnace given current commodity prices. The difference isn't huge (and arguably worth it given the environmental benefits), but it is there.
-2. An appropriately-sized solar system can help defray these costs, assuming it's good value for the money.
+1. An appropriately-sized solar system can help defray these costs, assuming it's good value for the money.
 
-And by doing so, we can find out some interesting things about time of use rates and how they totally change the economics of a system like this. Let's dig in.
+On the second point, let's look more closely at the solar system and its economics.
 
 ## Solar
 
@@ -133,7 +148,9 @@ This makes it pretty easy to calculate the value of your solar installation, ass
 your production is less than or equal to your consumption, just measure the net production per month and then apply the tiered rate to it.
 Electricity that you produce and use yourself (self-consumption) has a somewhat higher value, since you avoid the distribution fee (a few cents per kWh).
 
+<!--
 TODO: Insert some kind of chart or graphic showing how this works
+-->
 
 ### Time of use billing: game changer?
 
@@ -191,9 +208,8 @@ from values
 
 ### Time to break-even
 
-Given the earlier comments about the cost of a solar system, you might be wondering if the investment makes sense.
-
-The way to determine this is to project the numbers we got above over time.
+Details aside, the fundamental question I really wanted to answer was: does this investment make sense?
+To try to answer it, I tried to project the numbers I got above for the net metering solution over the next 19 years:
 
 <Slider
     title="Yearly percent increase" 
@@ -230,16 +246,24 @@ select
 from yearly_values
 ```
 
-<BarChart 
-    data={total_value_over_a_year}
-    x=year
-    y=cumulative_savings
-    yMax={30000}
-/>
+<BarChart data={total_value_over_a_year} x=year y=cumulative_savings yMax={30000}>
+<ReferenceLine y=20000 label="Rough break even" />
+</BarChart>
 
-Assumptions:
+You can adjust the slider above to see how the model performs under different scenarios.
+I opted for a very conservative average 2% yearly increase over time.
+If I had to guess, my suspicion is that it will be more than that, but I'm not entirely sure how much.
+Energy prices in Ontario have historically been a hot potato and my guess is that political pressure will keep increases in check.
+
+As usual, there are some caveats:
+
+1. There's some amount of variation in solar insolation year over year (usually on the order of a few percentage points). From my preliminary research, 2024 was a slightly below average year for Ontario.
+1. It doesn't account for the value of self-consumption. This saves you a few cents of distribution cost per kWh.
+1. [Consumer electricity prices actually _decreased_ slightly at the end of 2024](https://www.oeb.ca/consumer-information-and-protection/electricity-rates/historical-electricity-rates), so the estimates for the 2nd year might be high all other things being equal. I assumed that eventual rate increases would make this moot.
+
+It also goes without saying there's a few assumptions going into this model:
 
 1. The Ontario government continues to allow net metering under the current terms.
-2. The system doesn't require repairs or maintenance.
+1. The system doesn't require repairs or maintenance outside of the warranty, which would also cost money.
 
-TODO: Needs more narrative, thoughts about expected increases (without getting too political), maybe a note that 2024 was a bad solar year. Perhaps create a model that assumes a constant rate over the year?
+Limitations aside, I think the overall picture holds: this isn't a great business case and illustrates the challenges of residential solar in Ontario.

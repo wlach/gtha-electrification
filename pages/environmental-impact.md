@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Environmental Impact
 
 The main reason we embarked on this project was environmental reasons, so let's go into some detail there. In general, using energy causes CO2 emissions. For the purposes of this analysis, I'm going to use figures provided by the [Government of Canada](https://www.canada.ca/en/environment-climate-change/services/climate-change/pricing-pollution-how-it-will-work/output-based-pricing-system/federal-greenhouse-gas-offset-system/emission-factors-reference-values.html) which gives the following figures for Ontario, year-over-year:
@@ -16,7 +20,7 @@ join (select year,co2_g from co2_measures.gov_estimates where unit='kwh_electric
 
 You might find the values for electricity above shockingly low: I certainly did initially. There's a few reasons for this:
 
-1. This isn't an apples to apples comparison. An m3 of natural gas embodies something on the order of ~11kWh. Mentally you probably want to put a zero at the end of the kWh figures to compare them 1:1 (obviously they are not the same thing).
+1. This isn't an apples to apples comparison. An m3 of natural gas embodies something on the order of ~11kWh. Mentally you probably want to put a zero at the end of the kWh figures to even start comparing them.
 2. Ontario's grid is relatively low carbon: a mixture of nuclear, hydro, wind and natural gas (with nuclear and hydroelectricity dominating). Over the last few years, the use of gas has gone up somewhat, which explains the year-over-year increases.
 
 In any case, let's plug in the numbers and see what we get for 2022-09-01 - 2022-08-31 (the year before this project) and 2023-09-01 - 2024-08-31 (after this project was implemented):
@@ -32,7 +36,7 @@ select
     sum("Net kWh") as net_electric_kwh,
     sum("Gas m3" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'm3_gas')) / 1000000 as gas_co2_tons,
     sum("Net kWh" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'kwh_electricity')) / 1000000 as electric_co2_tons,
-    (sum("Gas m3" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'm3_gas')) + sum("Electric kWh" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'kwh_electricity'))) / 1000000 as total_co2_tons
+    (sum("Gas m3" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'm3_gas')) + sum("Electric kWh" * <<(select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'kwh_electricity'))) / 1000000 as total_co2_tons
 from utility_measures.utility_measures
 where Month >= '2022-09-01' and Month < '2024-09-01'
 group by year
