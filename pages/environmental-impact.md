@@ -36,7 +36,7 @@ select
     sum("Net kWh") as net_electric_kwh,
     sum("Gas m3" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'm3_gas')) / 1000000 as gas_co2_tons,
     sum("Net kWh" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'kwh_electricity')) / 1000000 as electric_co2_tons,
-    (sum("Gas m3" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'm3_gas')) + sum("Electric kWh" * <<(select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'kwh_electricity'))) / 1000000 as total_co2_tons
+    (sum("Gas m3" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'm3_gas')) + sum("Electric kWh" * (select co2_g from co2_measures.gov_estimates where year = extract(year from Month) and unit = 'kwh_electricity'))) / 1000000 as total_co2_tons
 from utility_measures.utility_measures
 where Month >= '2022-09-01' and Month < '2024-09-01'
 group by year
