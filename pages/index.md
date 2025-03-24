@@ -26,7 +26,7 @@ Still, I felt by combining my own data with some credible public figures (e.g. t
 Please note this is not an academic study and, although I have made every effort to provide accurate data and thorough analysis, it has not been formally peer reviewed (although a few friends did give it a once over, thank you!).
 Any errors are my own.
 I reserve the right to adjust my numbers, analysis, and conclusions at any time.
-If I make major changes, I'll note them in the [change log](./changelog.md).
+If I make major changes, I'll note them in the [change log](./changelog).
 
 This site is an interactive dashboard divided into a number of sections.
 If you want a primer on what electrification looks like before getting into the numbers, start with [Electrification and Solar](./electrification-and-solar).
