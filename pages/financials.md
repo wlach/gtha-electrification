@@ -204,7 +204,7 @@ from values
     <Column id="pct_improvement" title="Percent Improvement" fmt=pct totalAgg="mean" />
 </DataTable>
 
-~$120 for doing nothing more than sending an email to switch a rate plan. Not bad!
+$238 for doing nothing more than sending an email to switch a rate plan. Not bad!
 
 ### Time to break-even
 
