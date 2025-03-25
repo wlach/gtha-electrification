@@ -80,14 +80,14 @@ There is a minor benefit from switching the stove and hot water heating to elect
 An obvious question is what are the embodied emissions of the heat pump, solar panels, etc. that we installed?
 This is obviously difficult to calculate but [credible sources](https://www.sciencedirect.com/science/article/pii/S0378778817323101) online suggest a few tons each.
 Which is to say, that after just a year or two we'll have recouped the carbon costs of producing the heat pump.
-The case for solar panels is on the surface a little less compelling given those figures, but bear in mind that it's often displacing a natural gas plant at the margins so it's probably greater than you might think. I'm not
+The case for solar panels is on the surface a little less compelling given those figures, but bear in mind that it's often displacing a natural gas plant at the margins so it's probably greater than you might initially expect.
 
 ## Human-scale impact
 
 Ok, so we're saving about 3 tons of CO2 a year with this thing.
 What does that even mean?
 I think it's useful to look at some points of comparison.
-These are just some random things I found on the Internet using Google (take them with many grains of salt), but I think they're useful as a point of comparison:
+These are just some random things I found on the Internet using Google (so take them with many grains of salt), but I think they're useful as a point of comparison:
 
 ```sql emissions_comparison
 select

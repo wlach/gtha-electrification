@@ -121,16 +121,16 @@ I really do want to emphasize that this isn't an apples-to-apples comparison.
 There are just so many reasons why the numbers are the way they are:
 
 1. Our solar system was only installed in mid-November 2023, so these numbers don't reflect the savings that I'd expect if we had the system installed in a full year. In particular, September and October are usually good solar months.
-1. As mentioned on the energy page, we had an inefficient dehumidifier running in the basement which somewhat distorted our energy use.
-1. I'm pretty sure we used air conditioning more in 2024, especially in June/July/August. Central air conditioning is nice, what can I say?
+1. Weather differences (which you can see in the chart above).
+1. As mentioned on the energy page, we had an inefficient dehumidifier running in the basement which somewhat distorted our energy use. I honestly don't remember if we were running it constantly in 2022/2023.
+1. We used air conditioning more in 2024, especially in June/July/August. Central air conditioning is nice, what can I say?
 1. Shifting commodity and energy prices year over year.
 1. The [Canadian Carbon Tax](https://en.wikipedia.org/wiki/Carbon_pricing_in_Canada) (which was offset by a rebate in Ontario, not incorporated into these numbers).
-1. Weather differences.
 
-Even discounting all of that, I feel there's still a pretty overall picture here that I don't expect to change:
+Even discounting all of that, I feel there's still a pretty overall picture emerging here:
 
 1. On a pure cost basis, a heat pump with electric backup is going to be more expensive than a natural gas furnace given current commodity prices. The difference isn't huge (and arguably worth it given the environmental benefits), but it is there.
-1. An appropriately-sized solar system can help defray these costs, assuming it's good value for the money.
+1. An appropriately-sized solar system can help defray these costs, although of course it represents an initial investment which has to be paid off.
 
 On the second point, let's look more closely at the solar system and its economics.
 
