@@ -13,6 +13,8 @@ In late 2023, my partner and I had a number of projects done on our house to red
 - Replaced our (rental) gas hot water heater with an electric model
 - Replaced a gas stove with an induction range
 
+![Outdoor View of Solar Panels](/outdoor-panels.jpg)
+
 Approximately a year after the work completed, I had enough data on the performance and financials to start making this site.
 In Spring 2025, I finally published it.
 I had a few goals:

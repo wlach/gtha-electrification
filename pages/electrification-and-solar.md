@@ -80,6 +80,9 @@ We wound up doing all of it!
 ### Heat pump
 
 We got a 3 Ton Fujitsu coldweather model (to be precise an AMUG36LMAS), backed by a 10kW electric resistance heat strip.
+Here's what it looks like:
+
+![Fujitsu Condenser](/fujitsu-heatpump-outdoor.jpg)
 
 There are different models of heat pump that you can buy based on your needs.
 Unlike gas furnaces (which are typically way over sized and will cycle on and off many times over the course of an hour), a heat pump you typically want to run all the time -- cycling continuously is somewhat inefficient.
@@ -105,7 +108,11 @@ I expect that technology here will continue to evolve over the next few years an
 We initially weren't planning to go in this direction (I felt it was too complicated/expensive) but we got a pretty compelling sales pitch from a local company and decided to go for it.
 I don't want to go into exact figures about what it cost, but it was [within the ballpark of the \~$20k that reliable sources usually give](https://solarbonds.ca/blog/installing-solar-panels-on-your-ontario-home/) for a 6 kW system with a 5 kW inverter.
 
+![Outdoor Panels](/outdoor-panels.jpg)
+
 Honestly, it was pretty turn-key. I believe the system required a 200 amp panel, but we already got one for the heat pump. The company we went with took care of all the paperwork. A day or two of installation later, we were up and running.
+
+![SolarEdge App](/solaredge-app.png)
 
 <!--
 
@@ -130,5 +137,7 @@ Our plan being to get off natural gas altogether, there were some smaller applia
 For hot water, we went with a boring old conventional electric heater, on account of us being a relatively small household that doesn't have high usage. A heat pump water heater was quoted as being several thousand more expensive, and it didn't seem worth the cost: it would probably take decades to recover the extra money.
 
 We also replaced our old gas stove with a new induction range. Induction stoves are cool\! We were a little worried about what the experience cooking with them would be, but so far it's been great. It has the same "turn the knob, get heat" behaviour we enjoyed from a gas stove, without the particulate emissions. It also boils water super fast!
+
+![Induction Stove](/induction-stove.jpg)
 
 We still have a gas drier that we haven't yet swapped out. 😭
