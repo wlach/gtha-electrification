@@ -257,8 +257,8 @@ Energy prices in Ontario have historically been a hot potato and my guess is tha
 
 As usual, there are some caveats:
 
-1. There's some amount of variation in solar insolation year over year (usually on the order of a few percentage points). From my preliminary research, 2024 was a slightly below average year for Ontario.
-1. It doesn't account for the value of self-consumption. This saves you a few cents of distribution cost per kWh.
+1. There's some amount of variation in solar insolation year over year (usually on the order of a few percentage points) whereas this model just asssumes we'll generate 2024 numbers indefinitely. A future of version of this dashboard will incorporate insolation predictions, but for now you can look at the [energy section](./energy).
+1. It doesn't account for the value of self-consumption. This saves you a few cents of distribution cost per kWh. I expect this to change the break-even point somewhat (in the positive direction). Again, a future version of this will incorporate those calculations.
 1. [Consumer electricity prices actually _decreased_ slightly at the end of 2024](https://www.oeb.ca/consumer-information-and-protection/electricity-rates/historical-electricity-rates), so the estimates for the 2nd year might be high all other things being equal. I assumed that eventual rate increases would make this moot.
 
 It also goes without saying there's a few assumptions going into this model:

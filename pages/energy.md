@@ -148,3 +148,104 @@ This is due to two factors:
 1. Our system is a little undersized. Unfortunately we ran out of useable south
    facing roof space! Such is life.
 2. We were continuously running an inefficient dehumidifier in the basement until August 2024 which was using a lot of power. Oops 🤦. I wrote about this [on mastodon](https://mastodon.social/@wlach/112869943948893579) last year.
+
+### Solar irradiance
+
+Since the system runs by converting sunlight into electricity, the main factor
+influencing how much it produces is how much sunlight hits the panels.
+Obviously, this will vary a bit year over year.
+We can use the NASA [POWER](https://power.larc.nasa.gov/) data to get a handle on what the values were for 2024, and then present the counterfactual of what they might have been for other years (where we had different amounts of solar irradiance).
+
+#### Deriving an "irradiance" ratio
+
+The NASA POWER data provides a total amount of insolation (in kWh/m^2/day) for a given location.
+We can compare this to the system's _actual_ production to get an idea of how these two values relate.
+
+```sql solar_irradiance_to_production_ratio
+with solar_output as (
+    select
+        date_trunc('day', cast(time as date)) as day,
+        sum(kWh) as total_generated_kWh
+    from utility_measures.solar_output
+    group by day
+),
+irradiance_data as (
+    select
+        Date as day,
+        sum("Irradiance (kWh/m^2/day)") as total_irradiance
+    from weather.irradiance
+    group by day
+)
+select
+    solar_output.day as day,
+    solar_output.total_generated_kWh as total_generated_kWh,
+    irradiance_data.total_irradiance as total_irradiance,
+    total_generated_kWh / total_irradiance as ratio
+    from solar_output left join irradiance_data on solar_output.day = irradiance_data.day where solar_output.day >= '2024-01-01' and solar_output.day <= '2024-12-31'
+```
+
+<LineChart 
+    data={solar_irradiance_to_production_ratio}
+    x=day
+    y=ratio
+    />
+
+As you can see, the ratio gets pretty messy (especially in the winter when there are other factors like snow cover at play), but overall things balance out.
+The mean value over this series was 4.7633.
+Multiplying this by the total irradiance value for year gives us an estimated value of 6343.67, pretty close to our actual generation figure of 6557.73.
+
+#### Estimating production for previous years
+
+To estimate the production for previous years, we can take the average of the ratio and multiply it by the total irradiance value for that year.
+
+```sql estimated_solar_production_by_year
+select
+    date_trunc('year', irradiance.Date) as year,
+    sum("Irradiance (kWh/m^2/day)") as total_irradiance,
+    4.7633 * total_irradiance as estimated_production
+from weather.irradiance group by year
+```
+
+<BarChart
+data={estimated_solar_production_by_year}
+x=year
+y=estimated_production
+xFmt="YYYY"
+yFmt="kWh"
+/>
+
+As you can see, there are notable differences between years.
+
+```sql average_solar_production_by_year
+with yearly_estimated_production as (
+    select
+        date_trunc('year', irradiance.Date) as year,
+        sum("Irradiance (kWh/m^2/day)") as total_irradiance,
+        4.76 * total_irradiance as estimated_production
+    from weather.irradiance group by year
+)
+select
+min(estimated_production) as minimum_estimated_production,
+max(estimated_production) as maximum_estimated_production,
+avg(estimated_production) as average_estimated_production
+from yearly_estimated_production
+```
+
+Breaking that out into averages, we get <Value 
+    data={average_solar_production_by_year}
+    column=minimum_estimated_production 
+    row=0
+/> kWh as a minimum, <Value 
+    data={average_solar_production_by_year}
+    column=maximum_estimated_production 
+    row=0 /> kWh as a maximum, and <Value
+    data={average_solar_production_by_year}
+    column=average_estimated_production
+    row=0
+    /> kWh (or about 100 kWh below our estimated generation of 6343 kWh for 2024) as an average.
+
+#### Conclusion
+
+Irradiance can make a difference, but not an enormous one.
+We have sunny and cloudy days in Ontario, but averaged over a year, the end result is pretty similar.
+The results we got in 2024 are probably pretty close to what we'll get in subsequent years (subject to panel degradation, of course).
