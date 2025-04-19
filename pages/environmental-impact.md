@@ -69,8 +69,6 @@ order by year
     <Column id="total_co2_tons" title="Total CO2 Tons" />
 </DataTable>
 
-"Total Electricity" represents the total electricity consumed by the household, and represents the
-counterfactual of "how much would we need if we hadn't installed solar"?
 "Net electricity" represents the actual amount of electricity we pulled in from the grid, and is what we used to calculate our carbon emissions.
 Note that we did not have solar installed for the full period of comparison (we only got it mid-November 2023, 2.5 months after the evaluation period started): I would expect that our net marginal carbon emissions to go _down_ for the next year (2024-2025).
 
