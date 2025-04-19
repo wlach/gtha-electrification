@@ -42,7 +42,7 @@ select
 from all_months am
 left join solar_data sd on am.month = sd.month
 left join utility_data ud on am.month = ud.month
-where am.month <= '2024-09-01'
+where am.month <= '2024-12-01'
 order by am.month
 ```
 
@@ -124,7 +124,7 @@ By subtracting the second from the first, we can get a rough idea of how much we
     <Column id="utility_measured_kwhr" title="Electricity sent to grid (kWh)" />
 </DataTable>
 
-You can watch as our net consumption (total produced subtracted from total produced)
+You can watch as our net consumption (total consumed minus total produced)
 goes down over the course of the year as the days get longer and our need for heating goes down:
 
 <LineChart 

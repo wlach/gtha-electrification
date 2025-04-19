@@ -7,10 +7,13 @@ sidebar_position: 5
 ## Utility Bills
 
 ```sql total_cost
-select cast(Month as date) as month, "Total electricity bill" as total, 'electricity' as bill_type from utility_measures.utility_measures
-union all
-select cast(Month as date) as month, "Total gas bill" as total, 'gas' as bill_type from utility_measures.utility_measures
-order by month asc
+with totals as (
+    select cast(Month as date) as month, "Total electricity bill" as total, 'electricity' as bill_type from utility_measures.utility_measures
+    union all
+    select cast(Month as date) as month, "Total gas bill" as total, 'gas' as bill_type from utility_measures.utility_measures
+    order by month asc
+)
+select * from totals where month >= '2022-09-01' and month < '2024-09-01'
 ```
 
 ```sql temperature_by_month
@@ -139,18 +142,174 @@ On the second point, let's look more closely at the solar system and its economi
 The above tells a story of how, so long as natural gas remains relatively cheap and electricity expensive by comparison, heating a house with the former is going to win out economically.
 I thought it would be useful to break out the solar system by itself, although note that this system wouldn't have really made sense for us pre-heat-pump (when our electricity usage would have been less than the total output of the solar system) since net metering has no provision to credit you for over-production.
 
-### Net Metering
+### Net metering
 
 At the time we installed the solar system, you could **only** use this program in conjunction with
 the tiered rate plan, which gives a fixed rate for the first block of electricity (600 in the summer, 1000 in the winter)
-and a higher rate for the second block (see the next section for time-of-use billing, and how it's a bit of a game changer).
+and a higher rate for the second block.
 This makes it pretty easy to calculate the value of your solar installation, assuming
 your production is less than or equal to your consumption, just measure the net production per month and then apply the tiered rate to it.
-Electricity that you produce and use yourself (self-consumption) has a somewhat higher value, since you avoid the distribution fee (a few cents per kWh).
+
+Most months we consume well under 1000 kWh, so the value of the solar energy we produce is the lower rate (about 10 cents per kWh).
+Here's a chart of our monthly savings from the system:
+
+```sql net_metering_value
+with utility_data as (
+    select
+        Month as month,
+        "Electric kWh" as utility_measured_kwh,
+        "Utility Electric kWhr" as utility_measured_kwhr
+    from utility_measures.utility_measures
+),
+solar_data as (
+    select
+        date_trunc('month', cast(time as date)) as month,
+        sum(kWh) as total_generated_kWh
+    from utility_measures.solar_output
+    group by month
+),
+all_months as (
+    select distinct month from utility_data
+    union
+    select distinct month from solar_data
+),
+values_by_month as (
+    select
+        am.month as date_month,
+        sum(coalesce(sd.total_generated_kWh, 0)) as total_generated_kWh,
+        sum(coalesce(ud.utility_measured_kwhr, 0)) as utility_measured_kwhr,
+        sum(coalesce(sd.total_generated_kWh, 0) + coalesce(ud.utility_measured_kwh, 0) - coalesce(ud.utility_measured_kwhr, 0)) as total_consumption
+    from all_months am
+    left join solar_data sd on am.month = sd.month
+    left join utility_data ud on am.month = ud.month
+    where am.month >= '2024-01-01' and am.month <= '2024-12-01'
+    group by am.month
+    order by am.month
+),
+monthly_tier_calculations AS (
+    SELECT
+        date_month,
+        total_generated_kWh,
+        utility_measured_kwhr,
+        total_consumption,
+        -- Determine Threshold based on month (used multiple times below)
+        CASE
+            WHEN extract(month FROM date_month) IN (11, 12, 1, 2, 3, 4) THEN 1000 -- Winter threshold
+            ELSE 600 -- Summer threshold
+        END AS tier_threshold,
+        -- Calculate Higher Tier value component
+        least(
+            total_generated_kWh,
+            -- Consumption above threshold
+            greatest(0, total_consumption -
+                CASE
+                    WHEN extract(month FROM date_month) IN (11, 12, 1, 2, 3, 4) THEN 1000
+                    ELSE 600
+                END
+            )
+        ) * 0.125 AS higher_tier_value, -- Higher tier rate
+        -- Calculate Lower Tier value component
+         least(
+            -- Solar remaining after offsetting higher tier
+            greatest(0, total_generated_kWh - greatest(0, total_consumption -
+                CASE
+                    WHEN extract(month FROM date_month) IN (11, 12, 1, 2, 3, 4) THEN 1000
+                    ELSE 600
+                END
+            )),
+            -- Consumption at/below threshold
+            least(total_consumption,
+                CASE
+                    WHEN extract(month FROM date_month) IN (11, 12, 1, 2, 3, 4) THEN 1000
+                    ELSE 600
+                END
+            )
+        ) * 0.103 AS lower_tier_value -- Lower tier rate
+    FROM values_by_month
+)
+SELECT
+    date_month AS "month",
+    'Lower Tier' AS category,
+    lower_tier_value AS value
+FROM monthly_tier_calculations
+
+UNION ALL
+
+SELECT
+    date_month AS "month",
+    'Higher Tier' AS category,
+    higher_tier_value AS value
+FROM monthly_tier_calculations
+
+ORDER BY "month", category
+```
+
+<BarChart 
+    data={net_metering_value}
+    x=month
+    y=value
+    yFmt=cad
+    series=category
+    title="Tiered value by month"
+/>
+
+As you can see, during the winter months (and to a lesser extent in the summer),
+much more of the generation's value is at the higher tier.
+Note that for simplicity's sake, I used the net metering rates in effect for most of 2024 to calculate the above chart
+($0.103 for the first block, $0.125 for the second).
+
+In any case, my takeaway is that these numbers are not super impressive. But we're not done yet! There's two other aspects to this to explore: self consumption and the switch to time of use billing. We'll discuss these below.
 
 <!--
 TODO: Insert some kind of chart or graphic showing how this works
 -->
+
+### The value of self-consumption
+
+Even under a net metering regime, there are some costs associated with the electricity consumed.
+These are passed on to the consumer in the form of "distribution charges" which includes both a fixed portion and a variable one (currently about 2.5 cents per kWh where I live).
+The fixed costs are impossible to avoid, but by self-consuming our solar output, we can avoid some of the variable costs.
+
+```sql total_self_consumption
+with utility_data as (
+    select
+        Month as month,
+        "Electric kWh" as utility_measured_kwh,
+        "Utility Electric kWhr" as utility_measured_kwhr
+    from utility_measures.utility_measures
+),
+solar_data as (
+    select
+        date_trunc('month', cast(time as date)) as month,
+        sum(kWh) as total_generated_kWh
+    from utility_measures.solar_output
+    group by month
+),
+all_months as (
+    select distinct month from utility_data
+    union
+    select distinct month from solar_data
+)
+select
+    sum(coalesce(sd.total_generated_kWh, 0)) - sum(ud.utility_measured_kwhr) as self_consumption,
+    self_consumption * 0.025 as self_consumption_value
+from all_months am
+left join solar_data sd on am.month = sd.month
+left join utility_data ud on am.month = ud.month
+where am.month >= '2024-01-01' and am.month <= '2024-12-01'
+```
+
+Over the course of 2024, we self-consumed <Value 
+    data={total_self_consumption}
+    column=self_consumption 
+    row=0
+/> kWh worth of electricity, which adds up to $<Value 
+    data={total_self_consumption}
+    column=self_consumption_value
+    row=0
+/> over the course of a year.
+
+The nice thing about this is that it has a value that I expect to increase (slowly but steadily) year over year, irrespective of the whims of governments and utilities.
 
 ### Time of use billing: game changer?
 
@@ -163,8 +322,8 @@ It wasn't until I ran the numbers that I realized _how much better_ though.
 Let's look at an arbitrary sunny day in September 2024:
 
 ```sql sunny_day_september_2024
-select strftime(time, '%H:00') as hour, kWh, tou_rate, (kWh * tou_rate) as tou_value, tiered_rate, (kWh * tiered_rate) as tiered_value, tou_value / tiered_value as pct_improvement from
-utility_measures.solar_output where time >= '2024-09-03 00:00:00' and time < '2024-09-04 00:00:00' and kWh > 0
+select strftime(time, '%H:00') as hour, kWh, tou_rate, (kWh * tou_rate) as tou_value, tiered_rate, (kWh * tiered_rate) as tiered_value, (tou_value - tiered_value) / tiered_value as pct_improvement from
+utility_measures.solar_output where time >= '2024-09-03 00:00:00' and time < '2024-09-04 00:00:00' and kWh > 0.1
 ```
 
 <DataTable data={sunny_day_september_2024} totalRow=true rows=all>
@@ -175,25 +334,97 @@ utility_measures.solar_output where time >= '2024-09-03 00:00:00' and time < '20
     <Column id="pct_improvement" title="Percent Improvement" fmt=pct totalAgg="mean" />
 </DataTable>
 
-Huge difference! Let's look at how that adds up over a year:
+Huge difference! Those calculations are using the lower tier value, but still. Let's look at how that adds up over a year, taking our actual "tiered" consumption rates into account:
 
 ```sql monthly_tiered_vs_tou
-with values as (
+with solar_monthly as (
     select
-        strftime(time, '%Y-%m') as month,
-        sum(kWh) as kWh,
-        sum(kWh * tou_rate) as tou_value,
-        sum(kWh * tiered_rate) as tiered_value
+        date_trunc('month', cast(time as date)) as month,
+        sum(kWh) as total_generated_kWh
     from utility_measures.solar_output
     group by month
+),
+utility_data as (
+    select
+        Month as month,
+        "Electric kWh" as utility_measured_kwh,
+        "Utility Electric kWhr" as utility_measured_kwhr
+    from utility_measures.utility_measures
+),
+all_months as (
+    select distinct month from utility_data
+    union
+    select distinct month from solar_monthly
+),
+values_by_month as (
+    select
+        am.month,
+        coalesce(sm.total_generated_kWh, 0) as total_generated_kWh,
+        coalesce(ud.utility_measured_kwhr, 0) as utility_measured_kwhr,
+        coalesce(sm.total_generated_kWh, 0) + coalesce(ud.utility_measured_kwh, 0) - coalesce(ud.utility_measured_kwhr, 0) as total_consumption
+    from all_months am
+    left join solar_monthly sm on am.month = sm.month
+    left join utility_data ud on am.month = ud.month
+    where am.month >= '2024-01-01' and am.month <= '2024-12-01'
+),
+tiered_values as (
+    select
+        month,
+        total_generated_kWh,
+        -- Thresholds
+        case when extract(month from month) in (11,12,1,2,3,4) then 1000 else 600 end as threshold,
+        -- Total consumption
+        total_consumption,
+        -- Higher tier value
+        least(
+            total_generated_kWh,
+            greatest(0, total_consumption -
+                case when extract(month from month) in (11,12,1,2,3,4) then 1000 else 600 end
+            )
+        ) * 0.125 as higher_tier_value,
+        -- Lower tier value
+        least(
+            greatest(0, total_generated_kWh - greatest(0, total_consumption -
+                case when extract(month from month) in (11,12,1,2,3,4) then 1000 else 600 end
+            )),
+            least(total_consumption,
+                case when extract(month from month) in (11,12,1,2,3,4) then 1000 else 600 end
+            )
+        ) * 0.103 as lower_tier_value
+    from values_by_month
+),
+tiered_totals as (
+    select
+        month,
+        total_generated_kWh as kWh,
+        lower_tier_value + higher_tier_value as tiered_value
+    from tiered_values
+),
+tou_values as (
+    select
+        date_trunc('month', cast(time as date)) as month,
+        sum(kWh) as kWh,
+        sum(kWh * tou_rate) as tou_value
+    from utility_measures.solar_output
+    group by month
+),
+combined as (
+    select
+        tv.month,
+        tv.kWh,
+        coalesce(tou.tou_value, 0) as tou_value,
+        tv.tiered_value
+    from tiered_totals tv
+    left join tou_values tou on tv.month = tou.month
 )
 select
-    month,
+    strftime(month, '%Y-%m') as month,
     kWh,
     tou_value,
     tiered_value,
-    (tou_value - tiered_value) / ((tou_value + tiered_value) / 2) as pct_improvement
-from values
+    (tou_value - tiered_value) / ((tou_value + tiered_value) / 2.0) as pct_improvement
+from combined
+order by month
 ```
 
 <DataTable data={monthly_tiered_vs_tou} totalRow={true} rows=all>
@@ -204,7 +435,7 @@ from values
     <Column id="pct_improvement" title="Percent Improvement" fmt=pct totalAgg="mean" />
 </DataTable>
 
-$238 for doing nothing more than sending an email to switch a rate plan. Not bad!
+$162 for doing nothing more than sending an email to switch a rate plan. Not bad!
 
 ### Time to break-even
 
@@ -220,45 +451,111 @@ To try to answer it, I tried to project the numbers I got above for the net mete
     step=1
 />
 
-```sql total_value_over_a_year
-with recursive yearly_values as (
+```sql total_value_over_year
+with base_year as (
     select
-        1 as year,
         sum(kWh) as kWh_value,
-        sum(kWh * tou_rate) as tou_value,
-        sum(kWh * tou_rate) as cumulative_savings
+        sum(kWh * tou_rate) as tou_value
     from utility_measures.solar_output
     where time >= '2024-01' and time <= '2024-12'
-    union all
+),
+self_consumption_value as (
     select
-        year + 1,
+        (sum(coalesce(sd.total_generated_kWh, 0)) - sum(ud.utility_measured_kwhr)) * 0.025 as base_self_consumption_value
+    from (
+        select Month as month, "Electric kWh" as utility_measured_kwh, "Utility Electric kWhr" as utility_measured_kwhr
+        from utility_measures.utility_measures
+    ) ud
+    full outer join (
+        select date_trunc('month', cast(time as date)) as month, sum(kWh) as total_generated_kWh
+        from utility_measures.solar_output
+        group by month
+    ) sd on ud.month = sd.month
+    where ud.month >= '2024-01-01' and ud.month <= '2024-12-01'
+),
+recursive_projection as (
+    with recursive rec(
+        year,
         kWh_value,
-        tou_value * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100),
-        cumulative_savings + (tou_value * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100))
-    from yearly_values
-    where year < 20
+        tou_value,
+        self_consumption_value,
+        untaxed_savings_value,
+        cum_tou_value,
+        cum_self_consumption_value,
+        cum_untaxed_savings_value
+    ) as (
+        select
+            1,
+            b.kWh_value,
+            b.tou_value,
+            s.base_self_consumption_value,
+            (b.tou_value + s.base_self_consumption_value) * 0.13,
+            b.tou_value,
+            s.base_self_consumption_value,
+            (b.tou_value + s.base_self_consumption_value) * 0.13
+        from base_year b, self_consumption_value s
+
+        union all
+
+        select
+            year + 1,
+            kWh_value * 0.99,
+            tou_value * 0.99 * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100),
+            self_consumption_value * 0.99 * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100),
+            (
+                tou_value * 0.99 * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100) +
+                self_consumption_value * 0.99 * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100)
+            ) * 0.13,
+            cum_tou_value + tou_value * 0.99 * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100),
+            cum_self_consumption_value + self_consumption_value * 0.99 * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100),
+            cum_untaxed_savings_value +
+                (
+                    tou_value * 0.99 * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100) +
+                    self_consumption_value * 0.99 * (1 + CAST('${inputs.yearly_percent_increase}' AS FLOAT) / 100)
+                ) * 0.13
+        from rec
+        where year < 20
+    )
+    select * from rec
+),
+final as (
+    select year, 'Cumulative TOU Value' as category, cum_tou_value as value from recursive_projection
+    union all
+    select year, 'Cumulative Self Consumption Value', cum_self_consumption_value from recursive_projection
+    union all
+    select year, 'Cumulative Untaxed Savings', cum_untaxed_savings_value from recursive_projection
 )
-select
-    year,
-    kWh_value,
-    tou_value,
-    cumulative_savings
-from yearly_values
+select * from final
+order by year, category
 ```
 
-<BarChart data={total_value_over_a_year} x=year y=cumulative_savings yMax={30000}>
+<BarChart 
+    data={total_value_over_year}
+    x=year
+    y=value
+    yFmt=cad 
+    series=category
+    yMax={35000}
+    >
 <ReferenceLine y=20000 label="Rough break even" />
 </BarChart>
 
+The savings are broken into three categories:
+
+- The value of the actual energy produced valued using Ontario's time of use rates
+- The value of the distribution costs avoided due to self-consumption
+- The value of harmonized sales tax (HST) avoided due to both of the above
+
 You can adjust the slider above to see how the model performs under different scenarios.
-I opted for a very conservative average 2% yearly increase over time.
+I opted for a very conservative average 2% yearly increase over time (both for distribution costs and the value of energy).
 If I had to guess, my suspicion is that it will be more than that, but I'm not entirely sure how much.
 Energy prices in Ontario have historically been a hot potato and my guess is that political pressure will keep increases in check.
+
+This model also assumes a slight (1%) degradation of system capability per year.
 
 As usual, there are some caveats:
 
 1. There's some amount of variation in solar insolation year over year (usually on the order of a few percentage points) whereas this model just asssumes we'll generate 2024 numbers indefinitely. A future of version of this dashboard will incorporate insolation predictions, but for now you can look at the [energy section](./energy).
-1. It doesn't account for the value of self-consumption. This saves you a few cents of distribution cost per kWh. I expect this to change the break-even point somewhat (in the positive direction). Again, a future version of this will incorporate those calculations.
 1. [Consumer electricity prices actually _decreased_ slightly at the end of 2024](https://www.oeb.ca/consumer-information-and-protection/electricity-rates/historical-electricity-rates), so the estimates for the 2nd year might be high all other things being equal. I assumed that eventual rate increases would make this moot.
 
 It also goes without saying there's a few assumptions going into this model:
@@ -266,4 +563,4 @@ It also goes without saying there's a few assumptions going into this model:
 1. The Ontario government continues to allow net metering under the current terms.
 1. The system doesn't require repairs or maintenance outside of the warranty, which would also cost money.
 
-Limitations aside, I think the overall picture holds: this isn't a great business case and illustrates the challenges of residential solar in Ontario.
+Limitations aside, I think the overall picture holds: while not _absolutely_ horrible, a 15+ year payback period doesn't feel great and illustrates the challenges of residential solar in Ontario.
