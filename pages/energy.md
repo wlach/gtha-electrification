@@ -242,7 +242,7 @@ Breaking that out into averages, we get <Value
     data={average_solar_production_by_year}
     column=average_estimated_production
     row=0
-    /> kWh (or about 100 kWh below our estimated generation of 6343 kWh for 2024) as an average.
+    /> kWh (or about 100 kWh below our estimated generation of 6557 kWh for 2024) as an average.
 
 #### Conclusion
 
