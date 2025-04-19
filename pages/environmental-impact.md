@@ -57,7 +57,7 @@ counterfactual of "how much would we need if we hadn't installed solar"?
 "Net electricity" represents the actual amount of electricity we pulled in from the grid, and is what we used to calculate our carbon emissions.
 Note that we did not have solar installed for the full period of comparison (we only got it mid-November 2023, 2.5 months after the evaluation period started): I would expect that our net marginal carbon emissions to go _down_ for the next year (2024-2025).
 
-Probably unsurprisingly, gas dominates the CO2 emissions in 2022-2023. Not just because it's vastly more emitting, but also because a good portion of the house's energy use comes from it! After the heat pump and hot water heater installation, all of that heat gets converted to being generated via electricity, which we generate via either our solar system (zero marginal emissions) or the grid (negligible marginal emissions, as discussed above).
+Probably unsurprisingly, gas dominates the CO2 emissions in 2022-2023. Not just because it's vastly more emitting, but also because a good portion of the house's energy use came from it! After the heat pump and hot water heater installation, all of that heat gets converted to being generated via electricity, which we generate via either our solar system (zero marginal emissions) or the grid (negligible marginal emissions, as discussed above).
 
 You can see this more clearly if you graph out our CO2 emissions by month:
 
