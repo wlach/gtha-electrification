@@ -299,15 +299,16 @@ left join utility_data ud on am.month = ud.month
 where am.month >= '2024-01-01' and am.month <= '2024-12-01'
 ```
 
-Over the course of 2024, we self-consumed <Value 
+In 2024, we self-consumed <Value 
     data={total_self_consumption}
     column=self_consumption 
     row=0
-/> kWh worth of electricity, which adds up to $<Value 
+/> kWh worth of electricity from our solar system, which adds up to <Value 
     data={total_self_consumption}
     column=self_consumption_value
     row=0
-/> over the course of a year.
+    fmt=CAD
+/>.
 
 The nice thing about this is that it has a value that I expect to increase (slowly but steadily) year over year, irrespective of the whims of governments and utilities.
 

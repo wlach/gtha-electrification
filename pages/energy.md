@@ -55,7 +55,7 @@ order by am.month
 <ReferenceLine x="2023-10-01" label="Heat Pump Installed" hideValue=true />
 </LineChart>
 
-The above chart includes both energy drawn from the grid _and_ self-consumption from our solar system.
+The above chart includes both energy drawn from the grid _and_ self consumption from our solar system.
 For more information on that calculation, see the next section.
 
 The system comes with a 10kW backup strip, but honestly we probably didn't use it much (if at all) based on the data I'm seeing.
@@ -106,8 +106,7 @@ case) you'd size so as to produce enough in the summer to offset your winter.
 
 The other variable here is of course self-consumption: by default, my solar system
 will first try to power the house. What's left over at any given time is what's sold
-to the grid. The utility only measures the latter, of course, what we use ourselves is only
-visible to us.
+to the grid. The utility only measures the latter, of course, what we use ourselves is only visible to us.
 
 To get a handle on these variables, I sourced information from two different sources:
 
@@ -125,7 +124,7 @@ By subtracting the second from the first, we can get a rough idea of how much we
 </DataTable>
 
 You can watch as our net consumption (total consumed minus total produced)
-goes down over the course of the year as the days get longer and our need for heating goes down:
+goes down as the days get longer and our need for heating goes down:
 
 <LineChart 
     data={total_production_consumption_export}
