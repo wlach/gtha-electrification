@@ -23,7 +23,16 @@ I had a few goals:
 1. Better understand the viability of household electrification in the future. We benefited from various government programs in our case (Greener homes grants and loans) but it looks like those are on their way out. Would this have made sense without them?
 
 In putting this together, I quickly realized there's just too many variables at play to provide definitive answers on these questions.
-Still, I felt by combining my own data with some credible public figures (e.g. the CO2 emissions associated with natural gas and electrical generation in Ontario) I could at least provide some information and analysis which might be interesting to someone contemplating something similar.
+Still, I felt by combining my own data with some credible public figures (e.g. the CO2 emissions associated with natural gas and electrical generation in Ontario) I could at least provide some information and analysis which might be interesting to
+someone contemplating something similar.
+
+Here's what I found:
+
+- [Heat pumps really do work in the winter](./electrification-and-solar#heat-pump) for a reasonably insulated house, even in -15°C. No backup required!
+- A natural gas furnace [emits a lot of carbon dioxide](./environmental-impact#emissions-by-month).
+- Even a relatively small (6kW) solar system can [produce a sizable amount of electricity](./energy#production).
+- The economics of both solar and heat pumps are [borderline without government support](./financials#time-to-break-even) - but not terrible.
+- Switching to time-of-use billing [made a huge difference for ROI](./financials#time-of-use-billing-game-changer) for our solar system.
 
 Please note this is not an academic study. Although I have made every effort to provide accurate data and thorough analysis, it has not been formally peer reviewed (although a few friends did give it a once over, thank you!).
 Any errors are my own.

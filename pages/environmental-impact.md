@@ -74,6 +74,8 @@ Note that we did not have solar installed for the full period of comparison (we 
 
 Probably unsurprisingly, gas dominates the CO2 emissions in 2022-2023. Not just because it's vastly more emitting, but also because a good portion of the house's energy use came from it! After the heat pump and hot water heater installation, all of that heat gets converted to being generated via electricity, which we generate via either our solar system (zero marginal emissions) or the grid (negligible marginal emissions, as discussed above).
 
+### Emissions by month
+
 You can see this more clearly if you graph out our CO2 emissions by month:
 
 ```sql co2_by_month
