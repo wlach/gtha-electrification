@@ -4,7 +4,8 @@ sidebar_position: 7
 
 # Conclusion
 
-At least for heating the environmental benefits are pretty hard to argue with: the technology significantly decreases CO2 emissions. That by itself made the project feel entirely worthwhile.
+At least for heating the environmental benefits are pretty hard to argue with: the technology significantly decreases CO2 emissions.
+That by itself made the project feel entirely worthwhile.
 
 On the down side, I was a bit disappointed that the business case for these technologies wasn't a little better.
 All the caveats about measurement aside, I do think the picture is pretty clear:
