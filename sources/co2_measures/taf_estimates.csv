@@ -1,0 +1,7 @@
+period,tou_period,gco2_kwh
+summer,on_peak,220
+summer,mid_peak,195
+summer,off_peak,95
+winter,on_peak,244
+winter,mid_peak,205
+winter,off_peak,100
